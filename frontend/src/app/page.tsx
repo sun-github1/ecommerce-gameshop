@@ -4,8 +4,15 @@ import Link from "next/link";
 import Image from 'next/image';
 import GameCategoryCard from "@/components/GameCategoryCard/GameCategoryCard";
 import NewsLetter from "@/components/NewsLetter/NewsLetter";
+import { getCategories, getGames } from "@/libs/apis";
 
-export default function Home() {
+export default async function Home() {
+
+  const categories = await getCategories();
+  const games = await getGames();
+  const trendingGames = games?.filter(game => game.isTrending);
+  const featuredGame = games?.find(game => game.isFeatured);
+
   return (
     <>
       <HeroSection showLink />
@@ -16,16 +23,16 @@ export default function Home() {
           </h2>
         </div>
         <div className="flex gap-8 flex-wrap">
-          {games?.map(game => <GameCard
-            key={game.id}
+          {trendingGames?.map(game => <GameCard
+            key={game._id}
             gameName={game.name}
-            imageUrl={game.image}
-            slug={game.slug}
+            imageUrl={game.images[0].url}
+            slug={game.slug.current}
             price={game.price} />)}
         </div>
       </section>
 
-      <section className={sectionClassNames.featured}>
+      {featuredGame && (<section className={sectionClassNames.featured}>
         <div className={sectionClassNames.featured}>
           <h2 className={featuredClassNames.gameName}>
             {featuredGame.name}
@@ -33,9 +40,9 @@ export default function Home() {
           <p className={featuredClassNames.gameDetails}>
             {featuredGame.description}
           </p>
-          <Link href={`/games/${featuredGame.slug}`}>
+          <Link href={`/games/${featuredGame.slug.current}`}>
             <Image
-              src={featuredGame.image}
+              src={featuredGame.images[0].url}
               className={featuredClassNames.gameImage}
               alt={featuredGame.name}
               height={500}
@@ -43,7 +50,7 @@ export default function Home() {
             />
           </Link>
         </div>
-      </section>
+      </section>)}
 
       <section className={featuredGamesSection.categorySection}
         style={{
@@ -59,11 +66,11 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap">
             {categories && categories.map(category => (
-              <GameCategoryCard key={category.id}
+              <GameCategoryCard key={category._id}
                 gamecategory={{
                   categoryName: category.name,
                   categoryImage: category.image,
-                  slug: category.slug
+                  slug: category.slug.current
                 }} />
             ))}
           </div>
@@ -76,11 +83,11 @@ export default function Home() {
           Stay ahead of the Gaming Curve with out atest Games.
         </p>
         <div className="flex rounded gap-8 flex-wrap py-10">
-          {games.map(game => (<GameCard
-            key={game.id}
+          {games?.map(game => (<GameCard
+            key={game._id}
             gameName={game.name}
-            imageUrl={game.image}
-            slug={game.slug}
+            imageUrl={game.images[0].url}
+            slug={game.slug.current}
             price={game.price} />
           ))}
         </div>
@@ -126,40 +133,40 @@ const featuredClassNames = {
   gameImage: "h-72 md:h-96 lg:h-112 w-full object-cover rounded-lg",
 };
 
-const games = [
-  {
-    id: 1,
-    price: 12,
-    name: "Call of Duty: Modern Warfare",
-    slug: "call-of-duty",
-    image:
-      "https://images.unsplash.com/photo-1602673221577-0b56d7ce446b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8Q2FsbCUyMG9mJTIwRHV0eXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-  },
-  {
-    id: 2,
-    price: 14,
-    name: "Assassin's Creed Valhalla",
-    slug: "assassin-creed",
-    image:
-      "https://images.unsplash.com/photo-1586325194227-7625ed95172b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8QXNzYXNzaW4ncyUyMENyZWVkfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-  },
-  {
-    id: 3,
-    price: 42,
-    name: "FIFA 23",
-    slug: "fifa-23",
-    image:
-      "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGxheSUyMHN0YXRpb24lMjBmaWZhfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-  },
-  {
-    id: 4,
-    price: 27,
-    name: "The Legend of Zelda: Breath of the Wild",
-    slug: "the-legend-of-zelda",
-    image:
-      "https://images.unsplash.com/photo-1500856056008-859079534e9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGVnZW5kfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-  },
-];
+// const games = [
+//   {
+//     id: 1,
+//     price: 12,
+//     name: "Call of Duty: Modern Warfare",
+//     slug: "call-of-duty",
+//     image:
+//       "https://images.unsplash.com/photo-1602673221577-0b56d7ce446b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8Q2FsbCUyMG9mJTIwRHV0eXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+//   },
+//   {
+//     id: 2,
+//     price: 14,
+//     name: "Assassin's Creed Valhalla",
+//     slug: "assassin-creed",
+//     image:
+//       "https://images.unsplash.com/photo-1586325194227-7625ed95172b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8QXNzYXNzaW4ncyUyMENyZWVkfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+//   },
+//   {
+//     id: 3,
+//     price: 42,
+//     name: "FIFA 23",
+//     slug: "fifa-23",
+//     image:
+//       "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGxheSUyMHN0YXRpb24lMjBmaWZhfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+//   },
+//   {
+//     id: 4,
+//     price: 27,
+//     name: "The Legend of Zelda: Breath of the Wild",
+//     slug: "the-legend-of-zelda",
+//     image:
+//       "https://images.unsplash.com/photo-1500856056008-859079534e9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGVnZW5kfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+//   },
+// ];
 
 const featuredGame = {
   name: "Eternal Domination",
@@ -169,26 +176,26 @@ const featuredGame = {
 };
 
 
-const categories = [
-  {
-    id: 1,
-    name: "Action",
-    slug: "action",
-    image:
-      "https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8ZmlnaHR8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60",
-  },
-  {
-    id: 2,
-    name: "Adventure",
-    slug: "adventure",
-    image:
-      "https://images.unsplash.com/photo-1536751048178-14106afab4f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8cmFjaW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-  },
-  {
-    id: 3,
-    name: "Sports",
-    slug: "sports",
-    image:
-      "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c3BvcnRzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-  },
-];
+// const categories = [
+//   {
+//     id: 1,
+//     name: "Action",
+//     slug: "action",
+//     image:
+//       "https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8ZmlnaHR8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60",
+//   },
+//   {
+//     id: 2,
+//     name: "Adventure",
+//     slug: "adventure",
+//     image:
+//       "https://images.unsplash.com/photo-1536751048178-14106afab4f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8cmFjaW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+//   },
+//   {
+//     id: 3,
+//     name: "Sports",
+//     slug: "sports",
+//     image:
+//       "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c3BvcnRzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+//   },
+// ];
