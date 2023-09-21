@@ -1,10 +1,22 @@
+import CarouselSlider from '@/components/CarouselSlider/CarouselSlider';
+import { getGame } from '@/libs/apis';
 import { NextPage } from 'next'
 import React from 'react'
 
-const GameItem: NextPage = (props) => {
-    console.log("GameItem props", props);
+interface GameItemProps {
+  params: { slug: string; }
+}
+
+const GameItem: NextPage<GameItemProps> = async (props) => {
+  const { params: { slug } } = props;
+  const gameDetails= await getGame(slug);
+  console.log('GameItem game',gameDetails);
+
   return (
-    <div>GameItem</div>
+    <div>
+      <CarouselSlider images={gameDetails.images} />
+    </div>
+
   )
 }
 

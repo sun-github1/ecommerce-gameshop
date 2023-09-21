@@ -9,11 +9,16 @@ export interface Game {
     images: Array<{
         _key: string;
         url: string; 
-        file: string;
+        file: {
+            asset: {
+                _ref:string;
+            }
+        };
     }>;
     isFeatured: boolean;
     isTrending: boolean;
     category: Category;
     quantity: number;
     description: string;
+    imageFile: string;
 }

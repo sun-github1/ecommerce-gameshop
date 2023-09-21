@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from 'next/image';
 import GameCategoryCard from "@/components/GameCategoryCard/GameCategoryCard";
 import NewsLetter from "@/components/NewsLetter/NewsLetter";
-import { getCategories, getGames } from "@/libs/apis";
+import { getCategories, getGames, getRecentGames } from "@/libs/apis";
 
 export default async function Home() {
 
@@ -12,7 +12,7 @@ export default async function Home() {
   const games = await getGames();
   const trendingGames = games?.filter(game => game.isTrending);
   const featuredGame = games?.find(game => game.isFeatured);
-
+  const recentGames = await getRecentGames();
   return (
     <>
       <HeroSection showLink />
@@ -83,7 +83,7 @@ export default async function Home() {
           Stay ahead of the Gaming Curve with out atest Games.
         </p>
         <div className="flex rounded gap-8 flex-wrap py-10">
-          {games?.map(game => (<GameCard
+          {recentGames?.map(game => (<GameCard
             key={game._id}
             gameName={game.name}
             imageUrl={game.images[0].url}

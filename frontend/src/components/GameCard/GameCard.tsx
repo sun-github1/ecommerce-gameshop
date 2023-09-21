@@ -13,7 +13,7 @@ const GameCard: FC<{
     return (
         <>
             <Link href={`/games/${slug}`} className={gameCardClassNames.container}>
-                <h3 className={gameCardClassNames.price}>{price}</h3>
+                <h3 className={gameCardClassNames.price}>{`${price} $`}</h3>
                 <Image
                     src={imageUrl}
                     className={gameCardClassNames.image}
