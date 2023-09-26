@@ -3,7 +3,7 @@ import sanityClient from "./sanity";
 import { Game } from "@/models/game";
 
 export const getCategories = async (): Promise<Category[]> => {
-    const query = `*[_type == "category"]  {
+  const query = `*[_type == "category"]  {
         _id,
         name,
         slug {current},
@@ -11,12 +11,12 @@ export const getCategories = async (): Promise<Category[]> => {
         subtitle
     }`;
 
-    const categories: Category[] = await sanityClient.fetch({ query });
-    return categories;
+  const categories: Category[] = await sanityClient.fetch({ query });
+  return categories;
 }
 
 export const getCategory = async (slug: string): Promise<Category> => {
-    const query = `*[_type == "category" && slug.current=="${slug}"] [0] {
+  const query = `*[_type == "category" && slug.current=="${slug}"] [0] {
         _id,
         name,
         slug {current},
@@ -24,12 +24,12 @@ export const getCategory = async (slug: string): Promise<Category> => {
         subtitle
     }`;
 
-    const category: Category = await sanityClient.fetch({ query});
-    return category;
+  const category: Category = await sanityClient.fetch({ query });
+  return category;
 }
 
 export const getGames = async (): Promise<Game[]> => {
-    const query = `*[_type == "game"]  {
+  const query = `*[_type == "game"]  {
         _id,
         name,
         price,
@@ -50,15 +50,17 @@ export const getGames = async (): Promise<Game[]> => {
           }
     }`;
 
-    const games: Game[] = await sanityClient.fetch({ query,config: {
-        cache: 'no-cache'
-      } });
-    return games;
+  const games: Game[] = await sanityClient.fetch({
+    query, config: {
+      cache: 'no-cache'
+    }
+  });
+  return games;
 
 }
 
 export const getRecentGames = async (): Promise<Game[]> => {
-    const query = `*[_type == "game"] | order(_createdAt desc)[0...4] {
+  const query = `*[_type == "game"] | order(_createdAt desc)[0...4] {
         _id,
         name,
         price,
@@ -78,19 +80,37 @@ export const getRecentGames = async (): Promise<Game[]> => {
           }
     }`;
 
-    const games: Game[] = await sanityClient.fetch({ query });
-    return games;
+  const games: Game[] = await sanityClient.fetch({ query });
+  return games;
 
 }
 
 export const getGame = async (slug: string): Promise<Game> => {
-  const query = `*[_type == "game" && slug.current=="${slug}"] [0]`;
-  const game: Game = await sanityClient.fetch({ query});
+  const query = `*[_type == "game" && slug.current=="${slug}"] [0] {
+    _id,
+    name,
+    price,
+    images,
+    description,
+    isFeatured,
+    isTrending,
+    quantity,
+    'category': *[_id == ^.category._ref][0] {
+        name,
+        slug {
+          current
+        }
+      },
+      slug {
+        current
+      }
+  }`;
+  const game: Game = await sanityClient.fetch({ query });
   return game;
 }
 
 export const getGamesByCategory = async (slug: string): Promise<Game[]> => {
-    const query = `*[_type == "game" && category->slug.current=="${slug}"]  {
+  const query = `*[_type == "game" && category->slug.current=="${slug}"]  {
         _id,
         name,
         price,
@@ -106,6 +126,6 @@ export const getGamesByCategory = async (slug: string): Promise<Game[]> => {
         
     }`;
 
-    const games: Game[] = await sanityClient.fetch({ query });
-    return games;
+  const games: Game[] = await sanityClient.fetch({ query });
+  return games;
 }
