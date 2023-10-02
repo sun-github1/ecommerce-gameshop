@@ -1,7 +1,9 @@
 "use client";
 import CarouselSlider from '@/components/CarouselSlider/CarouselSlider';
+import { useAppDispatch } from '@/hooks/storeHook';
 import { getGame } from '@/libs/apis';
 import { Game } from '@/models/game';
+import { addItemToCart } from '@/redux/features/cartSlice';
 import React, { useState, useEffect } from 'react'
 import { FaShoppingCart } from "react-icons/fa"
 
@@ -15,7 +17,7 @@ const GameDetailsClient = (props: GameItemProps) => {
     const [gameDetails, setGameDetails] = useState<Game>();
     const [price, setPrice] = useState(0);
     const [quantity, setQuantity] = useState(0);
-    console.log("slug", slug);
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
         const fetchGameDetails = async () => {
@@ -45,10 +47,10 @@ const GameDetailsClient = (props: GameItemProps) => {
         }
     };
 
-    // const handleAddToCart = () => {
-    //   if (!gameDetails) return;
-    //   dispatch(addItemToCart({ ...gameDetails, quantity }));
-    // };
+    const handleAddToCart = () => {
+      if (!gameDetails) return;
+      dispatch(addItemToCart({ ...gameDetails, quantity }));
+    };
 
     return (
         <>
@@ -68,13 +70,14 @@ const GameDetailsClient = (props: GameItemProps) => {
                             readOnly
                         />
                         <button className={`${gameItemClassNames.button} 
-              ${quantity === gameDetails?.quantity && gameItemClassNames.disabledButton}`}
+                            ${quantity === gameDetails?.quantity && gameItemClassNames.disabledButton}`}
                             disabled={quantity === gameDetails?.quantity}
                             onClick={handleIncrease}>+</button>
                         <div className={gameItemClassNames.cartPrice} >{`$ ${price}`}</div>
                         <button className={`${gameItemClassNames.button} 
-            ${quantity === 0 && gameItemClassNames.disabledButton}`}
-                            disabled={quantity === 0}>
+                            ${quantity === 0 && gameItemClassNames.disabledButton}`}
+                            disabled={quantity === 0}
+                            onClick={handleAddToCart}>
                             <FaShoppingCart />
                         </button>
                     </div>

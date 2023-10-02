@@ -9,10 +9,10 @@ const Cart: FC = () => {
     const { showCart, cartItems } = useAppSelector(state => state.cart);
     const [renderComponent, setRenderComponent] = useState(false);
     
-    const dispath = useAppDispatch()
+    const dispatch = useAppDispatch()
 
     const handleRemoveItem = (itemId: string) => {
-        dispath(removeItemFromCart({ id: itemId }));
+        dispatch(removeItemFromCart({ id: itemId }));
     }
     
     useEffect(() => {
@@ -27,7 +27,7 @@ const Cart: FC = () => {
             <div className={classNames.header}>
                 <h2 className={classNames.title}>Shopping Cart</h2>
                 <button className={classNames.closeBtn}
-                    onClick={() => dispath(toggleCart())}>
+                    onClick={() => dispatch(toggleCart())}>
                     X
                 </button>
             </div>
