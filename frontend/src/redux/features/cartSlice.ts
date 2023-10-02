@@ -10,7 +10,7 @@ const cartFromLocalStorage = typeof localStorage !== "undefined" && localStorage
     JSON.parse(localStorage.getItem("cart")!) : [];
 
 const initialState: CartState = {
-    showCart: true,
+    showCart: false,
     cartItems: cartFromLocalStorage
 };
 

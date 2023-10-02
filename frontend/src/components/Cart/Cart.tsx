@@ -1,5 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from '@/hooks/storeHook'
+import useCartTotals from '@/hooks/useCartTotals';
 import { removeItemFromCart, toggleCart } from '@/redux/features/cartSlice'
 import Image from 'next/image';
 import React, { FC, useEffect, useState } from 'react';
@@ -8,19 +9,19 @@ import { RiCloseLine } from "react-icons/ri"
 const Cart: FC = () => {
     const { showCart, cartItems } = useAppSelector(state => state.cart);
     const [renderComponent, setRenderComponent] = useState(false);
-    
     const dispatch = useAppDispatch()
+    const { totalPrice, totalQuantity } = useCartTotals();
 
     const handleRemoveItem = (itemId: string) => {
         dispatch(removeItemFromCart({ id: itemId }));
     }
-    
-    useEffect(() => {
-		setRenderComponent(true);
-	}, []);
 
-	if (!renderComponent) return <></>;
-    
+    useEffect(() => {
+        setRenderComponent(true);
+    }, []);
+
+    if (!renderComponent) return <></>;
+
     return (
         <div className={`${classNames.container}
          ${showCart ? "translate-x-0" : "translate-x-full"}`}>
@@ -51,7 +52,7 @@ const Cart: FC = () => {
                             </div>
                             <div className={cartItemClassNames.quantityContainer}>
                                 <span className={cartItemClassNames.quantity}>
-                                    2
+                                    {item.quantity}
                                 </span>
                                 <button className={cartItemClassNames.removeButton}
                                     onClick={() => handleRemoveItem(item._id)}>
@@ -64,8 +65,8 @@ const Cart: FC = () => {
                     (<p> Your Cart is Empty</p>)}
             </div>
             <div className={classNames.subtotalContainer}>
-                <span className={classNames.subtotalText}>Subtotal</span>
-                <span className={classNames.subtotalPrice}>999</span>
+                <span className={classNames.subtotalText}>{`${totalPrice} $`}</span>
+                <span className={classNames.subtotalPrice}>{totalQuantity}</span>
             </div>
             <button className={classNames.checkoutBtn}>
                 CheckOut
