@@ -5,13 +5,13 @@ export interface Game {
     _id: string;
     price: number;
     name: string;
-    slug: { current: string};
+    slug: { current: string };
     images: Array<{
         _key: string;
-        url: string; 
+        url: string;
         file: {
             asset: {
-                _ref:string;
+                _ref: string;
             }
         };
     }>;
@@ -22,3 +22,8 @@ export interface Game {
     description: string;
     imageFile: string;
 }
+
+
+export type GameSubSet = Pick<Game,
+    "_id" | "price" | "quantity" | "images" | "name">
+    & { maxQuantity: number }

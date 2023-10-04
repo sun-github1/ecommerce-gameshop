@@ -5,6 +5,8 @@ import { Montserrat, Poppins } from 'next/font/google'
 import Footer from '@/components/Footer/Footer';
 import { Providers } from '@/redux/Providers';
 import Cart from '@/components/Cart/Cart';
+import Toast from '@/components/Toast/Toast';
+import { NextAuthProvider } from '@/components/AuthProvider/AuthProvider';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -19,7 +21,7 @@ const poppins = Poppins({
   variable: "--font-poppins"
 })
 
-export const metadata: Metadata ={
+export const metadata: Metadata = {
   title: "Buy Online Games",
   description: "This is a shop where we sell online games"
 };
@@ -32,11 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${montserrat.variable}`}>
       <body>
+        <Toast />
         <Providers>
-          <Cart/>
-           <Header/>
-        <main className="bg-primary-gradient min-h-screen">{children}</main>
-        <Footer />
+          <NextAuthProvider>
+            <Cart />
+            <Header />
+            <main className="bg-primary-gradient min-h-screen">{children}</main>
+            <Footer />
+          </NextAuthProvider>
         </Providers>
       </body>
     </html>

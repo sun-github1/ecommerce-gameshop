@@ -26,7 +26,7 @@ export default async function Home() {
           {trendingGames?.map(game => <GameCard
             key={game._id}
             gameName={game.name}
-            imageUrl={game.images[0].url}
+            imageUrl={game.images[0].url || game.imageFile}
             slug={game.slug.current}
             price={game.price} />)}
         </div>

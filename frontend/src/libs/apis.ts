@@ -1,6 +1,6 @@
 import { Category } from "@/models/category";
 import sanityClient from "./sanity";
-import { Game } from "@/models/game";
+import { Game, GameSubSet } from "@/models/game";
 
 export const getCategories = async (): Promise<Category[]> => {
   const query = `*[_type == "category"]  {
@@ -64,6 +64,7 @@ export const getRecentGames = async (): Promise<Game[]> => {
         _id,
         name,
         price,
+        "imageFile": images[0].file.asset->url,
         images,
         description,
         isFeatured,
@@ -90,6 +91,7 @@ export const getGame = async (slug: string): Promise<Game> => {
     _id,
     name,
     price,
+    "imageFile": images[0].file.asset->url,
     images,
     description,
     isFeatured,
@@ -127,5 +129,21 @@ export const getGamesByCategory = async (slug: string): Promise<Game[]> => {
     }`;
 
   const games: Game[] = await sanityClient.fetch({ query });
+  return games;
+}
+
+export const getGamesById = async (itemIds: Array<string>): Promise<GameSubSet[]> => {
+  const query = `*[_type == "game" && _id in $itemIds"]  {
+        _id,
+        name,
+        price,
+        quantity
+    }`;
+
+  const games: GameSubSet[] = await sanityClient.fetch({ 
+    query, 
+    params: { itemIds} 
+  });
+
   return games;
 }

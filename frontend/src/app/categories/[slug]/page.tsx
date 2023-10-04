@@ -43,7 +43,7 @@ const GameCategory: NextPage<gameCategoryProps> = async (props) => {
           {games && games?.map(game => (<GameCard
             key={game._id}
             gameName={game.name}
-            imageUrl={game.images[0].url}
+            imageUrl={game.images[0].url || game.imageFile}
             slug={slug}
             price={game.price} />
           ))}

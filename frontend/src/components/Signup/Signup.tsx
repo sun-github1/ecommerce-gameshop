@@ -1,4 +1,7 @@
-import { FC } from "react";
+"use client";
+import { FC, useRef, useState } from "react";
+import axios from "axios";
+import toast from 'react-hot-toast';
 
 interface SignUpProps {
     isSignupFormOpen: boolean,
@@ -8,7 +11,34 @@ interface SignUpProps {
 
 const Signup: FC<SignUpProps> = (props) => {
     const { isSignupFormOpen, toggleForm } = props;
+    const [isFormSubmitting, setIsFormSubmitting] = useState(false);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
 
+    const signupHandler = async () => {
+        if (!emailRef.current || !passwordRef.current)
+            return;
+        setIsFormSubmitting(true);
+        try {
+            const response = await axios.post("/api/sign-up", {
+                email: emailRef.current.value,
+                password: passwordRef.current.value
+            });
+            console.log("response returned: ", response);
+            setIsFormSubmitting(false);
+            
+            if (response.data) {
+                toast.success(`${response.statusText}. Please sign-in`);
+            }
+        }
+        catch (error) {
+            console.log("Registration failed", error);
+            toast.error('Registration failed');
+            setIsFormSubmitting(false);
+        }
+        toggleForm();
+
+    }
 
     return (
         isSignupFormOpen ? (
@@ -22,19 +52,29 @@ const Signup: FC<SignUpProps> = (props) => {
                             <label htmlFor="email" className={signupCssClassNames.label}>
                                 Email
                             </label>
-                            <input id="email" type="email" className={signupCssClassNames.input}
-                                placeholder="Enter your email" />
+                            <input id="email"
+                                type="email"
+                                className={signupCssClassNames.input}
+                                placeholder="Enter your email"
+                                ref={emailRef} />
                         </div>
                         <div className={signupCssClassNames.formControl}>
                             <label htmlFor="password" className={signupCssClassNames.label}>
                                 Password
                             </label>
-                            <input id="password" type="password" className={signupCssClassNames.input}
-                                placeholder="Enter your password" />
+                            <input id="password"
+                                type="password"
+                                className={signupCssClassNames.input}
+                                placeholder="Enter your password"
+                                ref={passwordRef} />
                         </div>
                         <div className={signupCssClassNames.btnContainer}>
-                            <span className={signupCssClassNames.cancel}>Cancel</span>
-                            <button className={signupCssClassNames.confirm} type="button">
+                            <span className={signupCssClassNames.cancel} onClick={toggleForm}>Cancel</span>
+                            <button
+                                className={signupCssClassNames.confirm}
+                                type="button"
+                                onClick={signupHandler}
+                                disabled={isFormSubmitting}>
                                 Sign Up
                             </button>
                         </div>
