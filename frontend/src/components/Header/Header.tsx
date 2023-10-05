@@ -34,7 +34,6 @@ const Header = () => {
             //handle unauthentication
         }
     });
-    console.log(status, session);
 
     const toggleForm = () => {
         setIsSignupFormOpen(prevState => !prevState);
@@ -48,7 +47,7 @@ const Header = () => {
             console.log("signin error", error);
         }
     }
-
+    console.log("session", session);
     return (
         <>
             <Signup isSignupFormOpen={isSignupFormOpen} toggleForm={toggleForm} />

@@ -10,7 +10,6 @@ interface gameProps{
 
 const Games: NextPage = async (props) => {
     const games = await getGames();
-    console.log('all games', games[4].imageFile);
     return (
         <div>
             <HeroSection />

@@ -13,7 +13,6 @@ const GameCategory: NextPage<gameCategoryProps> = async (props) => {
 
   const games = await getGamesByCategory(slug);
   const category = await getCategory(slug);
-  console.log('category XX', category);
   return (
     <>
       <section className={gameCategoryClassNames.hero}>

@@ -24,7 +24,6 @@ const GameDetailsClient = (props: GameItemProps) => {
             if (slug) {
                 const game = await getGame(slug);
                 setGameDetails(game);
-                console.log("game", game);
             }
         };
         fetchGameDetails();

@@ -4,6 +4,7 @@ import useCartTotals from '@/hooks/useCartTotals';
 import { getStripe } from '@/libs/loadStripe';
 import { removeItemFromCart, toggleCart } from '@/redux/features/cartSlice'
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { FC, useEffect, useState } from 'react';
 import { RiCloseLine } from "react-icons/ri"
@@ -12,6 +13,7 @@ const Cart: FC = () => {
     const { showCart, cartItems } = useAppSelector(state => state.cart);
     const [renderComponent, setRenderComponent] = useState(false);
     const dispatch = useAppDispatch()
+    const {data: session} = useSession();
     const { totalPrice, totalQuantity } = useCartTotals();
 
     const handleRemoveItem = (itemId: string) => {
@@ -21,11 +23,14 @@ const Cart: FC = () => {
     const checkOutHandler = async () => {
         const stripe = await getStripe();
         const { data } = await axios.post("/api/stripe", {
-            cartItems
+            cartItems,
+            userEmail: session?.user?.email
         });
         if (!data)
             return;
-        stripe.redirectToCheckOut({sessionId: data.id});
+
+        localStorage.removeItem('cart');
+        stripe.redirectToCheckout({sessionId: data.id});
     }
 
     useEffect(() => {

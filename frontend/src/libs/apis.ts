@@ -1,6 +1,7 @@
 import { Category } from "@/models/category";
-import sanityClient from "./sanity";
+import { sanityClient, sanityClientJs } from "./sanity";
 import { Game, GameSubSet } from "@/models/game";
+import axios from "axios";
 
 export const getCategories = async (): Promise<Category[]> => {
   const query = `*[_type == "category"]  {
@@ -132,18 +133,119 @@ export const getGamesByCategory = async (slug: string): Promise<Game[]> => {
   return games;
 }
 
-export const getGamesById = async (itemIds: Array<string>): Promise<GameSubSet[]> => {
-  const query = `*[_type == "game" && _id in $itemIds"]  {
+export const getGamesById = async (itemIds: any): Promise<GameSubSet[]> => {
+
+  const query = `*[_type == "game" && _id in $itemIds]  {
         _id,
         name,
         price,
-        quantity
+        quantity,
+        images
     }`;
 
-  const games: GameSubSet[] = await sanityClient.fetch({ 
-    query, 
-    params: { itemIds} 
+  const games: GameSubSet[] = await sanityClient.fetch({
+    query,
+    params: { itemIds },
   });
-
   return games;
+}
+
+// export const updateGameQuantity = async (gameId: string, newQuantity: number) => {
+//   const patch = sanityClientJs.patch(gameId);
+
+//   // Update the title of the document
+//   patch.set({ quantity: newQuantity });
+
+//   // Execute the patch
+//   patch.commit().then(() => {
+//     console.log('Game Document updated successfully!');
+//   });
+// }
+
+const callMutation = async (mutation: any) => {
+  const { data } = await axios.post(
+    `https://${process.env.NEXT_PUBLIC_SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v2021-06-07/data/mutate/${process.env.NEXT_PUBLIC_SANITY_STUDIO_DATASET}`,
+    mutation,
+    { headers: { Authorization: `Bearer ${process.env.SANITY_TOKEN}` } }
+  );
+
+  return data;
+}
+
+export const updateGameQuantity = async (games: GameSubSet[]) => {
+  const mutation = {
+    mutations: games.map(({ _id, maxQuantity, quantity }) => {
+      return {
+        patch: {
+          id: _id,
+          set: {
+            quantity: maxQuantity - quantity,
+          },
+        },
+      };
+    }),
+  };
+
+  const data = callMutation(mutation);
+
+  return data;
+}
+
+//create order
+export const createOrder = async (games: GameSubSet[], userEmail: string,
+  orderData: {
+    totalPrice: number,
+  }) => {
+  const mutation = {
+    mutations: [{
+      create: {
+        _type: "order",
+        items: games.map((game, index) => ({
+          game: {
+            _key: `game-${game._id}`,
+            _type: 'reference',
+            _ref: game._id
+          },
+          quantity: game.quantity,
+          _key: `order_${index}`
+        })),
+        userEmail,
+        totalPrice: orderData.totalPrice,
+        orderStatus: 'pending'
+      }
+    }]
+  };
+
+  const data = callMutation(mutation);
+
+  return data;
+}
+
+
+export const fetchOrders = async (userEmail: string) => {
+  const query = `*[_type == "order" && userEmail =="${userEmail}"]  {
+        _id,
+        items[] {
+          _key,
+          quantity,
+          game -> {
+            _id,
+            name,
+            price,
+            images,
+            slug{
+              current
+            },
+            description
+          }
+        },
+        orderStatus,
+        totalPrice,
+        createdAt
+    }`;
+
+  const orders: any = await sanityClient.fetch({
+    query
+  });
+  return orders;
 }

@@ -24,7 +24,7 @@ const Signup: FC<SignUpProps> = (props) => {
                 email: emailRef.current.value,
                 password: passwordRef.current.value
             });
-            console.log("response returned: ", response);
+
             setIsFormSubmitting(false);
             
             if (response.data) {
