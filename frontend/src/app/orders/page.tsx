@@ -53,7 +53,7 @@ const Orders = async () => {
                                 <td className='px-6 py-4'>
                                     {order.items.map((item: any) => (
                                         <span key={item._id}>
-                                            {item.game.price}
+                                            {item.game.price} <br />
                                         </span>))}
                                 </td>
                                 <td className='px-6 py-4'>{order.orderStatus}</td>

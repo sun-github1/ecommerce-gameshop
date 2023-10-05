@@ -15,7 +15,7 @@ const config: Config = {
         montserrat: ["var(--font-montserrat)", ...fontFamily.sans],
       },
       backgroundImage: {
-        "primary-gradient": "linear-gradient(180.96deg, #000000 0.82%, #4A2800 19.1%)",
+        "primary-gradient": "linear-gradient(180.96deg, #000000 0.82%, #006280 28.1%)",
       },
       colors: {
         primary: {
